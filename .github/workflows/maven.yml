@@ -13,7 +13,7 @@ jobs:
 
     steps:
       # Checkout the repository
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3.1.1
       
       # List contents of the root directory
       - name: List contents of root directory
@@ -61,7 +61,7 @@ jobs:
 
       # Upload the JUnit test results
       - name: Upload JUnit test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v3.1.1
         with:
           name: JUnit Test Results
           path: ${{github.workspace}}/junit-reports
