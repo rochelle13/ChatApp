@@ -21,27 +21,28 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       # List contents of the root directory
       - name: List contents of root directory
-        run: ls -a
+        run: ls -R
 
-      # Compile classes to test
+      # Compile Java classes
       - name: Compile classes
-        working-directory: ./ChatApp/src/main/java
+        working-directory: ./ChatApp/ChatApp/src/main/java
         run: |
           javac com/rochelle/chatapp/Login.java com/rochelle/chatapp/ChatApp.java
           ls -R com/rochelle/chatapp
 
-      # List contents of src directory after compile
-      - name: List contents of src directory after compile
-        working-directory: ./ChatApp/target/classes
-        run: ls
+      # List contents of the target directory after compile
+      - name: List contents of target directory after compile
+        working-directory: ./ChatApp/ChatApp/target
+        run: ls -R
 
-      # Run Task Class tests and output report
-      - name: Run Task Class tests and output report
-        working-directory: ./ChatApp
+      # Run JUnit tests and output report
+      - name: Run JUnit tests and output report
+        working-directory: ./ChatApp/ChatApp
         run: |
           java -jar ../junit-platform-console-standalone-1.6.0.jar \
             --class-path "./target/classes:./target/test-classes" \
@@ -54,4 +55,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: JUnit Test Results
-          path: ./ChatApp/target/surefire-reports
+          path: ./ChatApp/ChatApp/target/surefire-reports
+
+      # Archive build results
+      - name: Archive Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: ChatApp Build
+          path: ./ChatApp/ChatApp/target/classes
