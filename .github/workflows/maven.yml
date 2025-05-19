@@ -29,7 +29,7 @@ jobs:
 
       # Compile classes to test
       - name: Compile classes
-        working-directory: ./src/main/java/com/rochelle/chatapp
+        working-directory: ./src/chatapp
         run: javac -cp "../lib/junit-platform-console-standalone-1.6.0.jar" Login.java ChatApp.java 
       # List contents of src directory after compile
       - name: List contents of src directory after compile
