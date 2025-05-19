@@ -1,52 +1,52 @@
+# This is a basic workflow that is manually triggered
 name: ChatApp
 
+# Controls when the workflow will run
 on:
+  # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  # This workflow contains a single job called "build"
   build:
+    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
+    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checkout the repository
-      - name: Check out the repository
-        uses: actions/checkout@v3
+      # Checks out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
 
-      # Set up JDK 17
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'zulu'
-          java-version: '17'
+      # List contents of the root directory
+      - name: List contents of root directory
+        run: ls -a
 
-      # Cache Maven dependencies
-      - name: Cache Maven packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            maven-
+      # Compile classes to test
+      - name: Compile classes
+        working-directory: ./src/poe
+        run: javac -cp "../lib/junit-platform-console-standalone-1.6.0.jar" Login.java POE.java Task.java Part_3.java
 
-      # Build with Maven
-      - name: Build with Maven
-        run: mvn -B clean install
+      # List contents of src directory after compile
+      - name: List contents of src directory after compile
+        working-directory: ./src
+        run: ls
 
-      # Run Unit Tests
-      - name: Run Unit Tests
-        run: mvn test
+      # Run Task Class tests and output report
+      - name: Run Task Class tests and output report
+        working-directory: ./
+        run: |
+          ls
+          java -jar junit-platform-console-standalone-1.6.0.jar --class-path "../src:." --reports-dir ${{github.workspace}}/junit-reports --details=tree --scan-class-path
 
-      # List test results
-      - name: List test results
-        run: ls -R target/surefire-reports
-
-      # Upload JUnit test results
-      - name: Upload Test Results
+      # Upload the JUnit test results
+      - name: Upload JUnit test results
         uses: actions/upload-artifact@v4
         with:
           name: JUnit Test Results
-          path: target/surefire-reports
+          path: ${{github.workspace}}/junit-reports
