@@ -21,7 +21,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       # List contents of the root directory
       - name: List contents of root directory
@@ -29,17 +29,17 @@ jobs:
 
       # Compile classes to test
       - name: Compile classes
-        working-directory: ./chatApp/src
+        working-directory: ./ChatApp/src
         run: javac -cp "../lib/junit-platform-console-standalone-1.6.0.jar" /main/java/com/rochelle/chatapp/Login.java /main/java/com/rochelle/chatapp/ChatApp.java
 
       # List contents of src directory after compile
       - name: List contents of src directory after compile
-        working-directory: ./chatApp/src
+        working-directory: ./ChatApp/src
         run: ls
 
       # Run Task Class tests and output report
       - name: Run Task Class tests and output report
-        working-directory: ./chatApp
+        working-directory: ./ChatApp
         run: |
           ls
           java -jar junit-platform-console-standalone-1.6.0.jar --class-path "../src:." --reports-dir ${{github.workspace}}/junit-reports --details=tree --scan-class-path
