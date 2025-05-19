@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout source code
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
@@ -20,24 +20,17 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+          cache: 'maven'
 
-      - name: Cache Maven dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-      - name: Build project with Maven
-        run: mvn -B -f ./ChatApp/pom.xml clean package
+      - name: Build and test with Maven
+        run: mvn -B -f ChatApp/pom.xml clean verify
 
       - name: List target directory
-        run: ls -R ./ChatApp/target
+        run: ls -R ChatApp/target
 
       - name: Upload JUnit test results
-        if: always()
+        if: always()  # Ensures upload even if tests fail
         uses: actions/upload-artifact@v4
         with:
           name: JUnit Test Results
-          path: ./ChatApp/target/surefire-reports/
+          path: ChatApp/target/surefire-reports
