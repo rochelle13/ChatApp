@@ -22,8 +22,15 @@ jobs:
           java-version: '17'
           cache: 'maven'
 
-      - name: Build with Maven (skip tests)
-        run: mvn -B -f ChatApp/pom.xml clean package -DskipTests
+      - name: Build and test with Maven
+        run: mvn -B -f ChatApp/pom.xml clean verify
 
       - name: List target directory
         run: ls -R ChatApp/target
+
+      - name: Upload JUnit test results
+        if: always()  # Ensures upload even if tests fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: JUnit Test Results
+          path: ChatApp/target/surefire-reports
