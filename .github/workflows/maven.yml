@@ -1,5 +1,5 @@
 # This is a basic workflow that is manually triggered
-name: ChatApp
+name: TestPROG5121POE
 
 # Controls when the workflow will run
 on:
@@ -21,45 +21,32 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v2
 
       # List contents of the root directory
       - name: List contents of root directory
-        run: ls -R
+        run: ls -a
 
-      # Compile Java classes
+      # Compile classes to test
       - name: Compile classes
-        working-directory: ./ChatApp/ChatApp/src/main/java
-        run: |
-          javac com/rochelle/chatapp/Login.java com/rochelle/chatapp/ChatApp.java
-          ls -R com/rochelle/chatapp
+        working-directory: ./ChatApp/src
+        run: javac -cp "../lib/junit-platform-console-standalone-1.6.0.jar" ChatApp/ChatApp.java ChatApp/Login.java
 
-      # List contents of the target directory after compile
-      - name: List contents of target directory after compile
-        working-directory: ./ChatApp/ChatApp/target
-        run: ls -R
+      # List contents of src directory after compile
+      - name: List contents of src directory after compile
+        working-directory: ./ChatApp/src
+        run: ls
 
-      # Run JUnit tests and output report
-      - name: Run JUnit tests and output report
-        working-directory: ./ChatApp/ChatApp
+      # Run Task Class tests and output report
+      - name: Run Task Class tests and output report
+        working-directory: ./ChatApp
         run: |
-          java -jar ../junit-platform-console-standalone-1.6.0.jar \
-            --class-path "./target/classes:./target/test-classes" \
-            --reports-dir ./target/surefire-reports \
-            --details=tree \
-            --scan-class-path
+          ls
+          java -jar junit-platform-console-standalone-1.6.0.jar --class-path "../src:." --reports-dir ${{github.workspace}}/junit-reports --details=tree --scan-class-path
 
       # Upload the JUnit test results
       - name: Upload JUnit test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v2
         with:
           name: JUnit Test Results
-          path: ./ChatApp/ChatApp/target/surefire-reports
-
-      # Archive build results
-      - name: Archive Build
-        uses: actions/upload-artifact@v4
-        with:
-          name: ChatApp Build
-          path: ./ChatApp/ChatApp/target/classes
+          path: ${{github.workspace}}/junit-reports
