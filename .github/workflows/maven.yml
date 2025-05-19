@@ -29,23 +29,29 @@ jobs:
 
       # Compile classes to test
       - name: Compile classes
-        working-directory: ./src
-        run: javac -cp "ChatApp/src/" Login.java ChatApp.java 
+        working-directory: ./ChatApp/src/main/java
+        run: |
+          javac com/rochelle/chatapp/Login.java com/rochelle/chatapp/ChatApp.java
+          ls -R com/rochelle/chatapp
+
       # List contents of src directory after compile
       - name: List contents of src directory after compile
-        working-directory: ./src
+        working-directory: ./ChatApp/target/classes
         run: ls
 
       # Run Task Class tests and output report
       - name: Run Task Class tests and output report
-        working-directory: ./
+        working-directory: ./ChatApp
         run: |
-          ls
-          java -jar junit-platform-console-standalone-1.6.0.jar --class-path "../src:." --reports-dir ${{github.workspace}}/junit-reports --details=tree --scan-class-path
+          java -jar ../junit-platform-console-standalone-1.6.0.jar \
+            --class-path "./target/classes:./target/test-classes" \
+            --reports-dir ./target/surefire-reports \
+            --details=tree \
+            --scan-class-path
 
       # Upload the JUnit test results
       - name: Upload JUnit test results
         uses: actions/upload-artifact@v4
         with:
           name: JUnit Test Results
-          path: ${{github.workspace}}/junit-reports
+          path: ./ChatApp/target/surefire-reports
